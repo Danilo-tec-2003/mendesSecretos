@@ -1,5 +1,3 @@
-// script.js
-
 // Lista de participantes
 const participants = [
     "Danilo",
@@ -18,6 +16,9 @@ const participants = [
     "Eliza",
     "Naninha",
   ];
+  
+  // Objeto para armazenar os pares gerados
+  const secretSantaMap = {};
   
   // Função para embaralhar (randomizar)
   function shuffle(array) {
@@ -44,9 +45,7 @@ const participants = [
     shuffle(receivers);
   
     // Inicializar pares com Danilo e Rebeca fixos
-    const result = [
-      { giver: "Danilo", receiver: "Rebeca" },
-    ];
+    const result = [{ giver: "Danilo", receiver: "Rebeca" }];
   
     // Atribuir o restante (ninguém tira a si mesmo)
     for (let giver of givers) {
@@ -58,36 +57,25 @@ const participants = [
     return result;
   }
   
-  // Função para salvar pares no localStorage
-  function savePairs(pairs) {
-    const secretSantaMap = {};
-    pairs.forEach((pair) => {
-      // Gerar um ID único para cada participante
-      const uniqueId = Math.random().toString(36).substring(2, 10);
-      secretSantaMap[uniqueId] = pair.receiver;
-  
-      // Salvar no localStorage
-      localStorage.setItem(`secret_santa_${uniqueId}`, pair.receiver);
-    });
-  }
-  
-  // Função para criar links únicos
+  // Função para criar links únicos e salvar no mapa estático
   function generateLinks(pairs) {
     const resultDiv = document.getElementById("result");
     resultDiv.innerHTML = `<h2>Compartilhe os Links</h2><ul>`;
   
     pairs.forEach((pair) => {
-      // Gerar um ID único para cada participante
+      // Gerar um ID único
       const uniqueId = Math.random().toString(36).substring(2, 10);
   
-      // Salvar no localStorage
-      localStorage.setItem(`secret_santa_${uniqueId}`, pair.receiver);
+      // Salvar no mapa estático
+      secretSantaMap[uniqueId] = pair.receiver;
   
       // Mostrar links para o organizador copiar
-      resultDiv.innerHTML += `<li>
-        Envie este link para <strong>${pair.giver}</strong>: 
-        <button onclick="copyLink('${uniqueId}')">Copiar Link</button>
-      </li>`;
+      resultDiv.innerHTML += `
+        <li>
+          Envie este link para <strong>${pair.giver}</strong>: 
+          <button onclick="copyLink('${uniqueId}')">Copiar Link</button>
+        </li>
+      `;
     });
   
     resultDiv.innerHTML += `</ul>`;
@@ -112,7 +100,7 @@ const participants = [
     const id = urlParams.get("id");
   
     if (id) {
-      const secretSanta = localStorage.getItem(`secret_santa_${id}`);
+      const secretSanta = secretSantaMap[id];
       if (secretSanta) {
         document.body.innerHTML = `
           <div class="container">
